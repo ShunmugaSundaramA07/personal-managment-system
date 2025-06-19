@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
 import { Calendar, Users, CheckSquare, Plus, MoreHorizontal } from 'lucide-react';
 
 interface Project {
@@ -18,8 +19,13 @@ interface Project {
 }
 
 const ProjectManager = () => {
-  const [projects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    dueDate: ''
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -29,6 +35,32 @@ const ProjectManager = () => {
       default: return 'bg-gray-500';
     }
   };
+
+  const handleCreateProject = () => {
+    if (!formData.name.trim() || !formData.description.trim() || !formData.dueDate) {
+      return;
+    }
+
+    const newProject: Project = {
+      id: Date.now().toString(),
+      name: formData.name,
+      description: formData.description,
+      progress: 0,
+      dueDate: new Date(formData.dueDate).toLocaleDateString(),
+      status: 'active',
+      teamMembers: 1,
+      totalTasks: 0,
+      completedTasks: 0
+    };
+
+    setProjects([...projects, newProject]);
+    setFormData({ name: '', description: '', dueDate: '' });
+    setShowCreateForm(false);
+  };
+
+  const activeProjects = projects.filter(p => p.status === 'active').length;
+  const completedProjects = projects.filter(p => p.status === 'completed').length;
+  const totalTeamMembers = projects.reduce((sum, p) => sum + p.teamMembers, 0);
 
   return (
     <div className="space-y-6">
@@ -50,7 +82,7 @@ const ProjectManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Active Projects</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{activeProjects}</p>
               </div>
               <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
                 <CheckSquare className="h-6 w-6 text-white" />
@@ -64,7 +96,7 @@ const ProjectManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Completed Projects</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{completedProjects}</p>
               </div>
               <div className="p-3 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg">
                 <Calendar className="h-6 w-6 text-white" />
@@ -78,7 +110,7 @@ const ProjectManager = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-300">Team Members</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalTeamMembers}</p>
               </div>
               <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg">
                 <Users className="h-6 w-6 text-white" />
@@ -154,9 +186,10 @@ const ProjectManager = () => {
             <CardContent className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Project Name</label>
-                <input 
+                <Input 
                   type="text" 
-                  className="w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
                   placeholder="Enter project name"
                 />
               </div>
@@ -165,21 +198,24 @@ const ProjectManager = () => {
                 <textarea 
                   className="w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600"
                   rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
                   placeholder="Project description"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Due Date</label>
-                <input 
+                <Input 
                   type="date" 
-                  className="w-full p-2 border rounded-md dark:bg-slate-700 dark:border-slate-600"
+                  value={formData.dueDate}
+                  onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
                 />
               </div>
               <div className="flex gap-2 pt-4">
                 <Button onClick={() => setShowCreateForm(false)} variant="outline" className="flex-1">
                   Cancel
                 </Button>
-                <Button onClick={() => setShowCreateForm(false)} className="flex-1">
+                <Button onClick={handleCreateProject} className="flex-1">
                   Create Project
                 </Button>
               </div>

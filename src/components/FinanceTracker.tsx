@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Plus, TrendingUp, TrendingDown, DollarSign, PieChart, Calendar, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -159,10 +158,12 @@ const FinanceTracker = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(amount).replace('₹', 'Rs ');
   };
 
   const formatDate = (dateString: string) => {

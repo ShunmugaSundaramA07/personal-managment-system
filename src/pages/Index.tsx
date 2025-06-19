@@ -51,7 +51,7 @@ const Index = () => {
   const stats = [
     { title: 'Total Tasks', value: '0', change: '+0%', icon: CheckSquare },
     { title: 'Completed Today', value: '0', change: '+0%', icon: CheckSquare },
-    { title: 'This Month Expenses', value: '$0', change: '+0%', icon: DollarSign },
+    { title: 'This Month Expenses', value: 'Rs 0', change: '+0%', icon: DollarSign },
     { title: 'Notes Created', value: '0', change: '+0%', icon: FileText },
   ];
 
